@@ -128,3 +128,113 @@ class RedBlackTree:
             x.parent.right = y
         y.right = x
         x.parent = y
+
+    def delete(self, data):
+        self._delete_helper(self.root, data)
+
+    def _delete_helper(self, node, key):
+        z = self.NULL
+        while node != self.NULL:
+            if node.data == key:
+                z = node
+            if node.data <= key:
+                node = node.right
+            else:
+                node = node.left
+        
+        if z == self.NULL:
+            print("Not found")
+            return
+        
+        y = z
+        y_original_color = y.color
+        if z.left == self.NULL:
+            x = z.right
+            self._transplant(z, z.right)
+
+        elif z.right == self.NULL:
+            x = z.left
+            self._transplant(z, z.left)
+        else:
+            y = self._minimum(z.right)
+            y_original_color = y.color
+            x = y.right
+            if y.parent == z:
+                x.parent = y
+            else:
+                self._transplant(y, y.right)
+                y.right = z.right
+                y.right.parent = y
+            
+            self._transplant(z, y)
+            y.left = z.left
+            y.left.parent = y
+            y.color = z.color
+        if y_original_color == 0:
+            self._fix_delete(x)
+    
+    def _fix_delete(self, x):
+        while x != self.root and x.color == 0:
+            if x == x.parent.left:
+                s = x.parent.right
+                if s.color == 1:
+                    s.color = 0
+                    x.parent.color = 1
+                    self._left_rotate(x.parent)
+                    s = x.parent.right
+                
+                if s.left.color == 0 and s.right.color == 0:
+                    s.color = 1
+                    x = x.parent
+                else:
+                    if s.right.color == 0:
+                        s.left.color = 0
+                        s.color =1
+                        self._right_rotate(s)
+                        s = x.parent.right
+
+                    s.color = x.parent.color
+                    x.parent.color = 0
+                    s.right.color = 0
+                    self._left_rotate(x.parent)
+                    x = self.root
+            else:
+                s = x.parent.left
+                if s.color == 1:
+                    s.color = 0
+                    x.parent.color = 1
+                    self._right_rotate(x.parent)
+                    s = x.parent.left
+
+                if s.right.color == 0 and s.left.color == 0:
+                    s.color = 1
+                    x = x.parent
+                else:
+                    if s.left.color == 0:
+                        s.right.color = 0
+                        s.color = 1
+                        self._left_rotate(s)
+                        s = x.parent.left
+
+                    s.color = x.parent.color
+                    x.parent.color = 0
+                    s.left.color = 0
+                    self._right_rotate(x.parent)
+                    x = self.root
+        x.color = 0
+
+
+
+    def _transplant(self, u, v);
+        if u.parent == None:
+            self.root = v
+        elif u == u.parent.left:
+            u.parent.left = v
+        else:
+            u.parent.right = v
+        v.parent = u.parent
+
+    def _minimum(self, node):
+        while node.left != self.NULL:
+            node = node.left
+        return node
