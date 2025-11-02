@@ -225,7 +225,7 @@ class RedBlackTree:
 
 
 
-    def _transplant(self, u, v);
+    def _transplant(self, u, v):
         if u.parent == None:
             self.root = v
         elif u == u.parent.left:
